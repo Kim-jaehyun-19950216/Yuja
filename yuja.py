@@ -14,7 +14,14 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak, 
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_RIGHT, TA_LEFT
 from reportlab.lib.utils import ImageReader
+from google.oauth2.service_account import Credentials
 
+def get_creds():
+    # Streamlit Cloud의 .streamlit/secrets.toml에 저장된 내용을 가져옴
+    return Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
+        scopes=['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive.readonly']
+    )
 # Streamlit 페이지 설정
 st.set_page_config(page_title="구글 시트 -> PDF 변환기", layout="wide")
 
@@ -144,7 +151,8 @@ sheet_url = st.text_input(
 if st.button("시트 탭 불러오기"):
     try:
         scopes = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive.readonly']
-        creds = Credentials.from_service_account_file(JSON_FILE_NAME, scopes=scopes)
+        creds = get_creds()
+        client = gspread.authorize(creds)
         client = gspread.authorize(creds)
         
         sheet_id = sheet_url.split('/d/')[1].split('/')[0]
@@ -168,7 +176,8 @@ if st.session_state['sheet_tabs']:
         try:
             status_text.text("구글 시트 데이터 로드 중...")
             scopes = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive.readonly']
-            creds = Credentials.from_service_account_file(JSON_FILE_NAME, scopes=scopes)
+            creds = get_creds()
+            client = gspread.authorize(creds)
             client = gspread.authorize(creds)
             spreadsheet = client.open_by_key(sheet_url.split('/d/')[1].split('/')[0])
             worksheet = spreadsheet.worksheet(selected_tab)
