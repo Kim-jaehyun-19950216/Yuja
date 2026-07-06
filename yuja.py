@@ -25,7 +25,6 @@ def get_creds():
 # Streamlit 페이지 설정
 st.set_page_config(page_title="구글 시트 -> PDF 변환기", layout="wide")
 
-JSON_FILE_NAME = "project-2e6ab8c4-035e-4ffe-ab5-7d74789abe20.json"
 FONT_REGULAR = "malgun.ttf"
 FONT_BOLD = "malgunbd.ttf"
 
@@ -132,11 +131,6 @@ def get_image_from_url(url):
 # Streamlit UI 및 메인 로직
 # ==========================================
 st.title("구글 시트 -> PDF 변환기")
-
-# JSON 키 존재 여부 검사
-if not os.path.exists(JSON_FILE_NAME):
-    st.error(f"서버에 {JSON_FILE_NAME} 파일이 존재하지 않는다. 레포지토리를 확인해라.")
-    st.stop()
 
 # 세션 상태 초기화
 if 'sheet_tabs' not in st.session_state:
